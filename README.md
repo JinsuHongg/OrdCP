@@ -1,0 +1,2 @@
+# OrdCP
+Ordinal conformal prediction
