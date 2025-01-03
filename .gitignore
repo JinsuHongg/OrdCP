@@ -1,5 +1,6 @@
 # Data / virtual environments
 .venv/
+Results/
 *.zip
 *.gif
 *.pdf

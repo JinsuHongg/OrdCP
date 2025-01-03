@@ -24,25 +24,27 @@ def train_loop(dataloader, model, loss_fn, optimizer=None, lr_scheduler=None):
     # size = len(dataloader.dataset)
     num_batches = len(dataloader)
 
-    pred_arr = np.empty((0, 2), int)
+    pred_arr = np.empty((0, 6), int)
     train_loss = 0
     for batch, (X, y, label) in enumerate(dataloader):
         
         X, y = X.cuda(), y.cuda()
         # Compute prediction and loss
         pred = model(X)
+        if torch.any(torch.isnan(pred)):
+            print(pred)
+            print(optimizer.param_groups[0]['lr'])
         # _, predictions = torch.max(pred, 1)
 
-        # loss
-        # loss = loss_fn(pred, y)#.float()
-        loss = loss_fn(pred, y) # log_softmax after NLLloss! torch.nn.functional.log_softmax(pred, dim=1)
+        # binary cross entropy loss
+        loss = loss_fn(pred, y) 
 
         # predictions and true labels
         pred_val = np.reshape( find_pred(pred.cpu().detach().numpy()), (-1, 1))
         label = np.reshape(label.cpu().detach().numpy(), (-1, 1))
 
-        pred_arr = np.append(pred_arr, np.concatenate((pred_val, label), axis=1), axis=0)
-      
+        pred_arr = np.append(pred_arr, np.concatenate((pred.cpu().detach().numpy(), pred_val, label), axis=1), axis=0)
+        
         # Backpropagation
         optimizer.zero_grad()
         loss.backward()
@@ -53,7 +55,7 @@ def train_loop(dataloader, model, loss_fn, optimizer=None, lr_scheduler=None):
         #     loss, current = loss.item(), (batch + 1) * len(X)
         #     print(f"loss: {loss:.4f}  [{current:>5d}/{size:>5d}]")
 
-        train_loss += loss
+        train_loss += loss.float()
     
     # check loss
     train_loss /= num_batches
@@ -68,7 +70,7 @@ def test_loop(dataloader, model, loss_fn):
     num_batches = len(dataloader)
     
     test_loss = 0
-    pred_arr = np.empty((0, 2), int)
+    pred_arr = np.empty((0, 6), int)
     # Evaluating the model with torch.no_grad() ensures that no gradients are computed during test mode
     # also serves to reduce unnecessary gradient computations and memory usage for tensors with requires_grad=True
     with torch.no_grad():
@@ -82,7 +84,7 @@ def test_loop(dataloader, model, loss_fn):
             pred_val = np.reshape( find_pred(pred.cpu().detach().numpy()), (-1, 1))
             label = np.reshape(label.cpu().detach().numpy(), (-1, 1))
 
-            pred_arr = np.append(pred_arr, np.concatenate((pred_val, label), axis=1), axis=0)
+            pred_arr = np.append(pred_arr, np.concatenate((pred.cpu().detach().numpy(), pred_val, label), axis=1), axis=0)
 
     test_loss /= num_batches
 

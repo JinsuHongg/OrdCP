@@ -7,9 +7,9 @@ import torchvision.transforms as transforms
 
 # define cumulative labels
 def cumulative_bi(label, num_vals:int = 4):
-    ones = np.ones(label + 1, dtype=int)
-    zeros = np.zeros(num_vals - label - 1, dtype=int)
-    return torch.tensor(np.concatenate([ones, zeros], axis = 0))
+    ones = torch.ones(label + 1, dtype=torch.float)
+    zeros = torch.zeros(num_vals - label - 1, dtype=torch.float)
+    return torch.cat((ones, zeros), axis = 0)
 
 class SolarFlSets(Dataset):
     def __init__(self, annotations_df, img_dir: "dict | str", channel: str, num_sample = False, random_state=1004, transform=None, target_transform=None, normalization=False):
