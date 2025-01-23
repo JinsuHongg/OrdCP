@@ -171,7 +171,7 @@ for wt in decay_val:
             print('Invalid Model')
             exit()
 
-        model = nn.DataParallel(net, device_ids = [0]).to(device)
+        model = nn.DataParallel(net, device_ids = [0, 1]).to(device)
         loss_fn = nn.BCELoss(reduction='sum').to(device) 
         optimizer = torch.optim.SGD(model.parameters(), lr = lr, weight_decay = wt) 
         #scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.5, patience = 5)

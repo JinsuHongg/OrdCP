@@ -3,15 +3,17 @@ import pandas as pd
 
 run_records = []
 try:
-    for model in ['Mobilenet', 'Resnet18', 'Resnet34', 'Resnet50']:
+    for model in ['Resnet50']: #'Mobilenet', 'Resnet18', 'Resnet34', 
         for data in ['EUV304', 'HMI-CTnuum', 'HMI-Mag', 'Het']:
+
+            if model == 'Mobilenet' and data == 'EUV304':
+                continue
+            
             # Run the command and get exit code
             try:
                 result = subprocess.run(
                     ['python', '-m', 'Main_CV', '--model', model, '--data', data],
-                    check=True,
-                    capture_output=True,
-                    text=True
+                    check=True
                 )
                 exit_code = result.returncode
             except subprocess.CalledProcessError as e:
