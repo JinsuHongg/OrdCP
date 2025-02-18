@@ -33,7 +33,7 @@ The non-conformity score α for an example (x, y) is computed as:\
 $$ C_{i} = \sum_{k=1}^{K} \lvert y_{i,k} - \hat{h}_{i,k} (x_i) \rvert, i \in X_{calibration} $$
 
 '''math
-C_{i} = \sum_{k=1}^{K} \lvert y_{i,k} - \hat{h}_{i,k} (x_i) \rvert, i \in X_{calibration}
+C_{i} = {\sum_{k=1}^{K} \lvert y_{i,k} - \hat{h}_{i,k} (x_i) \rvert, i \in X_{calibration}}
 '''
 
 #### Let:
