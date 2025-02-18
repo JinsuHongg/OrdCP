@@ -6,6 +6,7 @@ Results/
 *.pdf
 *.csv
 *.png
+*.ods
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
