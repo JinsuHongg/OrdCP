@@ -14,7 +14,9 @@ ordinal regression, conformal prediction, solar physics.
 "--data", type = str, default = 'EUV304', help = "Enter Data source: EUV304, HMI-CTnuum, HMI-Mag, Het"  
 
 # Running the code
-python -m Main_CV --model Mobilenet --data EUV304
+python -m Main_CV --model Mobilenet --data EUV304  
+python -m Main_CP_Train --model Mobilenet --data EUV304  
+or check python scripts "run_scripts_CP.py" or "run_scripts.py"
 
 # Introduction
 This study predicts Multi-class solar flare events (with ordinality) using Solar full-disk images (with multi-channels). We propose nobel conformal predictor for ordinal regression (or ordinal logistic regression). The full-disk images labeled with 0 (Flare quite and class A), 1(class B), 2(class C), and 3(class M and X). The integer labels are transformed into cumulative binary labels, as described below, which is different from one-hot encoding: 0 &rarr; [1, 0, 0, 0], 1 &rarr; [1, 1, 0, 0], 2 &rarr; [1, 1, 1, 0], 3 &rarr; [1, 1, 1, 1]  
