@@ -20,6 +20,7 @@ def find_pred(pred, thred: float = 0.5):
 def train_loop(dataloader, model, loss_fn, optimizer=None, lr_scheduler=None):
     # Set the model to training mode - important for batch normalization and dropout layers
     # Unnecessary in this situation but added for best practices
+    device = next(model.parameters()).device
     model.train()
     # size = len(dataloader.dataset)
     num_batches = len(dataloader)
@@ -28,7 +29,7 @@ def train_loop(dataloader, model, loss_fn, optimizer=None, lr_scheduler=None):
     train_loss = 0
     for batch, (X, y, label) in enumerate(dataloader):
         
-        X, y = X.cuda(), y.cuda()
+        X, y = X.to(device), y.to(device)
         # Compute prediction and loss
         pred = model(X)
         if torch.any(torch.isnan(pred)):
@@ -66,6 +67,7 @@ def train_loop(dataloader, model, loss_fn, optimizer=None, lr_scheduler=None):
 def test_loop(dataloader, model, loss_fn):
     # Set the model to evaluation mode - important for batch normalization and dropout layers
     # Unnecessary in this situation but added for best practices
+    device = next(model.parameters()).device
     model.eval()
     num_batches = len(dataloader)
     
@@ -75,7 +77,7 @@ def test_loop(dataloader, model, loss_fn):
     # also serves to reduce unnecessary gradient computations and memory usage for tensors with requires_grad=True
     with torch.no_grad():
         for X, y, label in dataloader:
-            X, y = X.cuda(), y.cuda()
+            X, y = X.to(device), y.to(device)
             pred = model(X)
             _, predictions = torch.max(pred, 1)
             test_loss += loss_fn(pred, y).item() #torch.nn.functional.log_softmax(pred, dim=1)
@@ -85,30 +87,6 @@ def test_loop(dataloader, model, loss_fn):
             label = np.reshape(label.cpu().detach().numpy(), (-1, 1))
 
             pred_arr = np.append(pred_arr, np.concatenate((pred.cpu().detach().numpy(), pred_val, label), axis=1), axis=0)
-
-    test_loss /= num_batches
-
-    # print(f"Test loss: {test_loss:.4f}")
-    return test_loss, pred_arr
-
-def test_loop_cp(dataloader, model, loss_fn, score_fn):
-    # Set the model to evaluation mode - important for batch normalization and dropout layers
-    # Unnecessary in this situation but added for best practices
-    model.eval()
-    num_batches = len(dataloader)
-    
-    test_loss = 0
-    pred_arr = np.empty((0,8), float)
-    # Evaluating the model with torch.no_grad() ensures that no gradients are computed during test mode
-    # also serves to reduce unnecessary gradient computations and memory usage for tensors with requires_grad=True
-    with torch.no_grad():
-        for X, y in dataloader:
-            X, y = X.cuda(), y.cuda()
-            pred = model(X)
-            _, predictions = torch.max(pred, 1)
-            # output = score_fn(pred)
-            test_loss += loss_fn(pred, y).item() #torch.nn.functional.log_softmax(pred, dim=1)
-            pred_arr = np.append(pred_arr, np.concatenate( (pred.cpu().detach().numpy(), y.cpu().detach().numpy()), axis=1), axis=0)
 
     test_loss /= num_batches
 

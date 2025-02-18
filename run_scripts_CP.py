@@ -4,13 +4,13 @@ import pandas as pd
 
 run_records = []
 try:
-    for model in ['Resnet50']: #'Mobilenet', 'Resnet18', 'Resnet34', 
-        for data in ['EUV304', 'HMI-CTnuum']: #'EUV304','HMI-CTnuum', 'HMI-Mag', 'Het'
+    for model in ['Mobilenet', 'Resnet18', 'Resnet34', 'Resnet50']: 
+        for data in ['EUV304', 'HMI-CTnuum', 'HMI-Mag', 'Het']:
             
             # Run the command and get exit code
             try:
                 result = subprocess.run(
-                    ['python', '-m', 'Main_CV', '--model', model, '--data', data, '--weight_decay', '1e-4'],
+                    ['python', '-m', 'Main_CP_Train', '--model', model, '--data', data],
                     check=True
                 )
                 exit_code = result.returncode
@@ -31,4 +31,4 @@ except KeyboardInterrupt:
 
 # Convert all records to DataFrame
 df = pd.DataFrame(run_records)
-df.to_csv("Run_scripts_check.csv", index=False)
+df.to_csv("Run_scripts_CP_check.csv", index=False)

@@ -19,9 +19,10 @@ from torch.utils.data import DataLoader, ConcatDataset
 # predefined class
 from scripts.models import mobilenet, ResNet18, ResNet34, ResNet50
 from scripts.training import SolarFlSets, HSS2, TSS, F1Pos, HSS_multiclass 
-from scripts.training import TSS_multiclass, train_loop, test_loop, oversample_func, cross_entropy
+from scripts.training import TSS_multiclass, train_loop, test_loop, oversample_func 
 
 # CUDA for PyTorch
+torch.cuda.empty_cache()
 use_cuda = torch.cuda.is_available()
 device = torch.device('cuda' if use_cuda else 'cpu')
 torch.backends.cudnn.benchmark = True
@@ -39,8 +40,8 @@ parser = argparse.ArgumentParser(description="FullDiskModelTrainer")
 parser.add_argument("--epochs", type = int, default = 12, help = "number of epochs")
 parser.add_argument("--batch_size", type = int, default = 64, help = "batch size")
 parser.add_argument("--lr", type = float, default = 1e-7, help = "learning rate")
-parser.add_argument("--weight_decay", type = list, default = [0, 1e-4], help = "regularization parameter")
-parser.add_argument("--max_lr", type = float, default = 1e-2, help = "MAX learning rate")
+parser.add_argument("--weight_decay", type=float, nargs="+", default=[0, 1e-4], help="Regularization parameter")
+parser.add_argument("--max_lr", type = float, default = 1e-3, help = "MAX learning rate")
 parser.add_argument("--models", type = str, default = 'Mobilenet', help = "Enter Mobilenet, Resnet18, Resnet34, Resnet50")
 parser.add_argument("--freeze", type = bool, default = False, help = 'Enter True or False to freeze the convolutional layers')
 parser.add_argument("--data", type = str, default = 'EUV304', help = "Enter Data source: EUV304, HMI-CTnuum, HMI-Mag, Het")
@@ -171,7 +172,7 @@ for wt in decay_val:
             print('Invalid Model')
             exit()
 
-        model = nn.DataParallel(net, device_ids = [0, 1]).to(device)
+        model = nn.DataParallel(net, device_ids = [0]).to(device)
         loss_fn = nn.BCELoss(reduction='sum').to(device) 
         optimizer = torch.optim.SGD(model.parameters(), lr = lr, weight_decay = wt) 
         #scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.5, patience = 5)
