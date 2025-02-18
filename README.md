@@ -29,8 +29,10 @@ This implementation focuses on Mondrian Conformal Prediction, a method that prov
 2. These scores maintain separate calibration for each class label
 3. The result is a prediction set that guarantees the desired coverage level within each class
 
-The non-conformity score α for an example (x, y) is computed as:
+The non-conformity score α for an example (x, y) is computed as:\
 $$C_{i} = \sum_{k=1}^{K} \lvert y_{i,k} - \hat{h}_{i,k} (x_i) \rvert, i \in X_{calibration}$$
+<p><span class="math display">$$C_{i} = \sum_{k=1}^{K} \lvert y_{i,k} -
+\hat{h}_{i,k} (x_i) \rvert, i \in X_{calibration}$$</span></p>
 
 #### Let:
 1. $K$ represent the total number of classes
